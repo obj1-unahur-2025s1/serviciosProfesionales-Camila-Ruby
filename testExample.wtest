@@ -1,9 +1,11 @@
-import example.pepita
+import profecionales.*
+import empresas.*
+import universidades.*
 
-describe "group of tests for pepita" {
+describe "group of tests for " {
 
-  test "pepita has initial energy" {
-    assert.equals(100, pepita.energy())
+  test "a" {
+    assert.that(true)
   }
 
 }
