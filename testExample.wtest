@@ -1,11 +1,81 @@
 import profecionales.*
 import empresas.*
 import universidades.*
+import solicitantes.*
 
-describe "group of tests for " {
+describe "Tests de Etapa 1: " {
 
-  test "a" {
-    assert.that(true)
+  const sanMartin = new Universidad(provincia = "Buenos Aires", honorariosRecomendados = 3500)
+  const rosario = new Universidad(provincia = "Santa Fe", honorariosRecomendados = 2800)
+  const corrientes = new Universidad(provincia = "Corrientes", honorariosRecomendados = 4200)
+  const hurlingham = new Universidad(provincia = "Buenos Aires", honorariosRecomendados = 8800)
+  
+  const juana = new ProfecionalVinculado(universidad = rosario)
+  const melina = new ProfecionalAsociado(universidad = corrientes)
+  const rocio = new ProfecionalLibre(universidad = hurlingham, honorarios = 5000, provinciasDondeTrabaja = ["Santa Fe", "Cordoba", "Buenos Aires"])
+  const luciana = new ProfecionalLibre(universidad = rosario, honorarios = 3200, provinciasDondeTrabaja = ["Santa Fe", "Entre Rios"])
+
+  const empresa1 = new Empresa(honorariosDeReferencia = 3200)
+
+  method initialize(){
+    empresa1.contratarProfecional(juana)
+    empresa1.contratarProfecional(melina)
+    empresa1.contratarProfecional(rocio)
+    empresa1.contratarProfecional(luciana)
+  }
+  
+  test "dos de sus profesionales estudiaron en Rosario, uno en Hurlingham, ninguno (o sea cero) en San Martín." {
+    assert.equals(2, empresa1.cuantosEstudiaronEn(rosario))
+    assert.equals(1, empresa1.cuantosEstudiaronEn(hurlingham))
+    assert.equals(0, empresa1.cuantosEstudiaronEn(sanMartin))
   }
 
+  test "Rocio es la unica profecional cara" {
+    assert.that(empresa1.profecionalesCaros().contains(rocio))
+    assert.equals(#{rocio}, empresa1.profecionalesCaros())
+  }
+
+  test "como universidades formadoras estan: la de Rosario, Corrientes y Hurlingham." {
+    assert.equals(#{rosario, corrientes, hurlingham},empresa1.universidadesFormadoras())
+  }
+
+  test "la profecional más barata es juana" {
+    assert.equals(juana, empresa1.profecionalMasBarato())
+  }
+
+  test "empresa1 es de gente acotada" {
+    assert.that(empresa1.esDeGenteAcotada())
+  }
+
+  test "Si le agregamos dos provincias más a luciana la empresa1 ya no es de gente acotada" {
+    luciana.agregarProvincia("Corrientes")
+    luciana.agregarProvincia("Misiones")
+    assert.notThat(empresa1.esDeGenteAcotada())
+  }
+
+
+}
+
+describe "Probando el metodo profecionalPocoAtractivo" {
+
+  
+  const hurlingham = new Universidad(provincia = "Buenos Aires", honorariosRecomendados = 8800)
+
+  const camila = new ProfecionalLibre(
+    universidad = hurlingham, 
+    honorarios = 10000,
+    provinciasDondeTrabaja = ["Buenos Aires", "Tierra del Fuego", "Chubut"])
+
+  const micaela = new ProfecionalLibre(
+    universidad = hurlingham, 
+    honorarios = 8000,
+    provinciasDondeTrabaja = ["Buenos Aires", "Tierra del Fuego", "Chubut"])
+
+  
+  const empresa1 = new Empresa(honorariosDeReferencia = 3200, profecionales = [camila, micaela])
+
+  test "camila es una profecional poco atractiva para la empresa 
+  ya que micaela trabaja en las mismas provincias y sus honorarios son menores" {
+    assert.that(empresa1.esProfecionalPocoAtractivo(camila))
+  }
 }
